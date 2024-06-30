@@ -3,6 +3,37 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User, Friendship
 from .serializers import UserSerializer, FriendshipSerializer
+from rest_framework.permissions import AllowAny
+
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        email = request.data.get("email")
+        password = request.data.get("password")
+        confirm_password = request.data.get("confirm_password")
+
+        if password != confirm_password:
+            return Response(
+                {"error": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if not email or not password:
+            return Response(
+                {"error": "Please provide all required fields"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = User.objects.create_user(email=email, password=password, username=email)
+        return Response(
+            {"message": "User created successfully"}, status=status.HTTP_201_CREATED
+        )
 
 
 class UsersListView(APIView):

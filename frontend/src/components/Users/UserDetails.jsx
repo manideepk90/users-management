@@ -55,7 +55,7 @@ const skeletonStyles = {
 function UserDetails({ none = false, isEditUser = false }) {
   const id = useParams()?.id;
   const navigate = useNavigate();
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState(null);
   const [user, setUser] = React.useState(null);
   return (

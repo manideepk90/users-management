@@ -10,11 +10,12 @@ from .views import (
     RemoveFriendshipView,
     FriendshipDetailsView,
     FriendshipsListView,
+    RegisterView,
 )
 
 urlpatterns = [
+    path("users/register", RegisterView.as_view(), name="register"),
     path("users/", UsersListView.as_view(), name="users"),
-    path("users/add/", AddUserView.as_view(), name="add_user"),
     path("users/modify/<int:id>/", ModifyUserView.as_view(), name="modify_user"),
     path("users/delete/<int:id>/", DeleteUserView.as_view(), name="delete_user"),
     path("users/<int:id>/", UserDetailsView.as_view(), name="user_details"),

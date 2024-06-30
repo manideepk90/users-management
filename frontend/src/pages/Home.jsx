@@ -1,7 +1,7 @@
 import React from "react";
 import NavigationBar from "../components/NavigationBar/NavigationBar";
 import UserList from "../components/Users/UserList";
-import UserDetails from "../components/Users/UserDetails";
+// import UserDetails from "../components/Users/UserDetails";
 import { Outlet } from "react-router-dom";
 
 const styles = {
