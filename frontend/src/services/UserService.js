@@ -140,6 +140,36 @@ class UserService {
       };
     }
   }
+
+  async updateUser({ email, password, confirm_password }) {
+    try {
+      const response = await axios.post(
+        apiUrl + "user/update",
+        {
+          email,
+          // password,
+          // confirm_password: confirm_password,
+          username: email,
+        },
+        {
+          headers: {
+            Authorization: AuthService.getAuthHeader(),
+          },
+        }
+      );
+      const data = response.data;
+      this.users = data;
+      localStorage.removeItem("accessToken");
+      return { status: true, data };
+    } catch (error) {
+      console.error("Failed to update user:", error);
+      return {
+        status: false,
+        message:
+          error.response.data.error || error.response.data.error_description,
+      };
+    }
+  }
 }
 
 export default new UserService();

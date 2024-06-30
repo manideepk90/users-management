@@ -90,9 +90,24 @@ class AddUserView(APIView):
 
 
 class ModifyUserView(APIView):
-    def post(self, request, id):
+    def post(self, request):
         try:
-            user = User.objects.get(id=id)
+            user = User.objects.get(id=request.user.id)
+            email = request.data.get("email")
+            password = request.data.get("password")
+            confirm_password = request.data.get("confirm_password")
+
+            if not email or not password:
+                return Response(
+                    {"error": "Please provide all required fields"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            if password != confirm_password:
+                return Response(
+                    {"error": "Passwords do not match"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            
         except User.DoesNotExist:
             return Response(
                 {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND

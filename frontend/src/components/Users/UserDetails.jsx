@@ -3,6 +3,7 @@ import ProfileImage from "../Profile/ProfileImage";
 import Button from "../buttons/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import UserService from "../../services/UserService";
+import { UserContext } from "../../App";
 
 const styles = {
   container: {
