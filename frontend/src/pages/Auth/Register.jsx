@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import AuthService from "../../services/AuthService";
 import InputField from "../../components/Inputs/InputField";
 import Button from "../../components/buttons/Button";
-import AuthService from "../../services/AuthService";
-import { Link, useNavigate } from "react-router-dom";
 
-function Login() {
+function Register() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -24,16 +25,15 @@ function Login() {
     setLoading(false);
   };
 
-  useEffect(() => {
-    if (AuthService.isAuthenticated()) {
-      setLoading(true);
-      setError("Already logged in, redirecting to home page...");
-      setTimeout(() => {
-        navigate("/");
-      }, 2000);
-    }
-  }, []);
-
+  //   useEffect(() => {
+  //     if (AuthService.isAuthenticated()) {
+  //       setLoading(true);
+  //       setError("Already logged in, redirecting to home page...");
+  //       setTimeout(() => {
+  //         navigate("/");
+  //       }, 2000);
+  //     }
+  //   }, []);
   const styles = {
     container: {
       display: "flex",
@@ -61,7 +61,7 @@ function Login() {
 
   return (
     <div style={styles.container}>
-      <p style={styles.headText}>Login</p>
+      <p style={styles.headText}>Sign Up</p>
       <form
         style={styles.container}
         onSubmit={(e) => {
@@ -71,7 +71,7 @@ function Login() {
       >
         {error && <p style={styles.error}>{error}</p>}
         <InputField
-          label="username"
+          label="Username/Email"
           value={username}
           handleOnChange={setUsername}
         />
@@ -83,13 +83,21 @@ function Login() {
           }}
           handleOnChange={setPassword}
         />
+        <InputField
+          label="confirm password"
+          value={confirmPassword}
+          inputProps={{
+            type: "password",
+          }}
+          handleOnChange={setConfirmPassword}
+        />
         <Button disabled={loading}>{loading ? "loading..." : "Login"}</Button>
       </form>
       <p>
-        Don't have an account? <Link to="/register">Register</Link>
+        Already have an account? try <Link to="/login">login</Link> instead
       </p>
     </div>
   );
 }
 
-export default Login;
+export default Register;

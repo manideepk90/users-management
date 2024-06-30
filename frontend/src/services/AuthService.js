@@ -8,8 +8,8 @@ class AuthService {
         tokenUrl,
         new URLSearchParams({
           grant_type: "password",
-          username,
-          password,
+          username: username,
+          password: password,
           client_id: clientId,
           client_secret: clientSecret,
         }),
@@ -20,16 +20,17 @@ class AuthService {
 
       if (response.status === 200) {
         localStorage.setItem("accessToken", response.data.access_token);
-        return true;
+        return { status: true };
       }
     } catch (error) {
       console.error("Login failed:", error);
-      return false;
+      return { status: false, error: error.response.data.error_description };
     }
   }
 
   logout() {
     localStorage.removeItem("accessToken");
+    window.location.replace("/");
   }
 
   getToken() {
