@@ -14,13 +14,17 @@ function Register() {
   const handleLogin = async () => {
     setError("");
     setLoading(true);
-    const response = await AuthService.login(username, password);
+    const response = await AuthService.register(
+      username,
+      password,
+      confirmPassword
+    );
     if (response?.status) {
-      console.log("Login successful");
+      console.log("Registration successful");
       navigate("/");
     } else {
       setError(response?.error);
-      console.log("Login failed");
+      console.log("Registration failed");
     }
     setLoading(false);
   };
@@ -91,7 +95,9 @@ function Register() {
           }}
           handleOnChange={setConfirmPassword}
         />
-        <Button disabled={loading}>{loading ? "loading..." : "Login"}</Button>
+        <Button disabled={loading}>
+          {loading ? "loading..." : "Register"}
+        </Button>
       </form>
       <p>
         Already have an account? try <Link to="/login">login</Link> instead

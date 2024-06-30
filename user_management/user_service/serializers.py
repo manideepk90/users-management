@@ -4,7 +4,7 @@ from .models import User, Friendship
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email']
+        fields = ['id', 'username', 'email']
 
 class FriendshipSerializer(serializers.ModelSerializer):
     class Meta:

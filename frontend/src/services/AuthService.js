@@ -1,5 +1,5 @@
 import axios from "axios";
-import { clientId, clientSecret, tokenUrl } from "../constants/secrets";
+import { apiUrl, clientId, clientSecret, tokenUrl } from "../constants/secrets";
 
 class AuthService {
   async login(username, password) {
@@ -27,14 +27,38 @@ class AuthService {
       return { status: false, error: error.response.data.error_description };
     }
   }
+  async register(username, password, confirm_password) {
+    try {
+      const response = await axios.post(apiUrl + "users/register", {
+        email: username,
+        password,
+        confirm_password,
+      });
+
+      if (response.status === 200 || response.status === 201) {
+        return await this.login(username, password);
+      }
+    } catch (error) {
+      console.error("Registration failed:", error);
+      return {
+        status: false,
+        error:
+          error.response.data.error || error.response.data.error_description,
+      };
+    }
+  }
 
   logout() {
     localStorage.removeItem("accessToken");
-    window.location.replace("/");
+    // window.location.replace("/");
   }
 
   getToken() {
     return localStorage.getItem("accessToken");
+  }
+
+  getAuthHeader() {
+    return `Bearer ${this.getToken()}`;
   }
 
   isAuthenticated() {

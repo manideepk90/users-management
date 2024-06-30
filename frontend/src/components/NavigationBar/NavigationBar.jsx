@@ -1,7 +1,7 @@
 import React from "react";
 import Button from "../buttons/Button";
 import AuthService from "../../services/AuthService";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function NavigationBar() {
   const styles = {
@@ -24,6 +24,7 @@ function NavigationBar() {
       alignItems: "center",
       listStyle: "none",
       padding: 0,
+      gap: "10px",
     },
     li: {
       padding: "10px",
@@ -37,6 +38,7 @@ function NavigationBar() {
       marginBottom: "20px",
     },
   };
+  const navigate = useNavigate();
   return (
     <header style={styles.container}>
       <nav style={styles.nav}>
@@ -46,7 +48,18 @@ function NavigationBar() {
         {/* <ul style={styles.ul}>
           <li style={styles.li}>Home</li>
         </ul> */}
-        <Button onClick={AuthService.logout}>Logout</Button>
+        <div style={styles.ul}>
+          <Button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            My profile
+          </Button>
+          <Button backgroundColor="#ff2255" onClick={AuthService.logout}>
+            Logout
+          </Button>
+        </div>
       </nav>
     </header>
   );

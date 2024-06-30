@@ -49,20 +49,21 @@ function UserItem({ user }) {
     <div
       style={styles.container}
       onClick={() => {
-        console.log("user clicked", user?.id);
         navigate(`/${user?.id}`);
       }}
     >
       <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
         <ProfileImage />
         <div>
-          <p style={styles.userNameText}>{user?.username}</p>
+          {/* <p style={styles.userNameText}>{user?.username}</p> */}
           <p style={styles.emailText}>{user?.email}</p>
         </div>
       </div>
-      <div style={styles?.friendItem}>
-        <p style={styles?.friendText}>Friend</p>
-      </div>
+      {user?.is_friend && (
+        <div style={styles?.friendItem}>
+          <p style={styles?.friendText}>Friend</p>
+        </div>
+      )}
     </div>
   ) : (
     <UserItemSkeleton />

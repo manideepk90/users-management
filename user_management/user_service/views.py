@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import User, Friendship
 from .serializers import UserSerializer, FriendshipSerializer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
 class RegisterView(APIView):
@@ -36,11 +36,48 @@ class RegisterView(APIView):
         )
 
 
-class UsersListView(APIView):
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
+        user = request.user
+        serializer = UserSerializer(user)
         return Response(serializer.data)
+
+
+class UsersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_friendship(self, user_id, friend_id):
+        try:
+            user = User.objects.get(id=user_id)
+            friend = User.objects.get(id=friend_id)
+            friendship = Friendship.objects.filter(user=user, friend=friend).first()
+            if not friendship:
+                friendship = Friendship.objects.filter(user=friend, friend=user).first()
+            return friendship
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request):
+        users = User.objects.all().exclude(id=request.user.id)
+        serialized_users = []
+        for user in users:
+            friendship = self.get_friendship(request.user.id, user.id)
+            if friendship:
+                user.is_friend = True
+            else:
+                user.is_friend = False
+            serialized_users.append(
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "is_friend": user.is_friend,
+                }
+            )
+        # serializer = UserSerializer(users, many=True)
+        return Response(serialized_users)
 
 
 class AddUserView(APIView):
@@ -69,9 +106,9 @@ class ModifyUserView(APIView):
 
 
 class DeleteUserView(APIView):
-    def post(self, request, id):
+    def post(self, request):
         try:
-            user = User.objects.get(id=id)
+            user = User.objects.get(id=request.user.id)
         except User.DoesNotExist:
             return Response(
                 {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
@@ -82,15 +119,61 @@ class DeleteUserView(APIView):
 
 
 class UserDetailsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_friendship(self, user_id, friend_id):
+        try:
+            user = User.objects.get(id=user_id)
+            friend = User.objects.get(id=friend_id)
+            friendship = Friendship.objects.filter(user=user, friend=friend).first()
+            if not friendship:
+                friendship = Friendship.objects.filter(user=friend, friend=user).first()
+            return friendship
+        except User.DoesNotExist:
+            return None
+
     def post(self, request, id):
         try:
             user = User.objects.get(id=id)
             serializer = UserSerializer(user)
-            return Response(serializer.data)
+
+            friendship = self.get_friendship(request.user.id, id)
+            if not friendship:
+                return Response({"user": serializer.data, "friendship": None})
+            friendship_serializer = FriendshipSerializer(friendship)
+            # return Response(friendship_serializer.data)
+            return Response(
+                {"user": serializer.data, "friendship": friendship_serializer.data}
+            )
         except User.DoesNotExist:
             return Response(
                 {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
             )
+
+
+class UserFriendShipView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_friendship(self, user_id, friend_id):
+        try:
+            user = User.objects.get(id=user_id)
+            friend = User.objects.get(id=friend_id)
+            friendship = Friendship.objects.filter(user=user, friend=friend).first()
+            if not friendship:
+                friendship = Friendship.objects.filter(user=friend, friend=user).first()
+            return friendship
+        except User.DoesNotExist:
+            return None
+
+    def get(self, request, id):
+        friendship = self.get_friendship(request.user.id, id)
+        if not friendship:
+            return Response(
+                {"error": "Friendship not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        friendship_serializer = FriendshipSerializer(friendship)
+        return Response(friendship_serializer.data)
 
 
 class FriendshipsListView(APIView):
@@ -112,9 +195,41 @@ class FriendshipsListView(APIView):
 
 
 class AddFriendshipView(APIView):
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        serializer = FriendshipSerializer(data=request.data)
+    def get_friendship(self, user_id, friend_id):
+        try:
+            user = User.objects.get(id=user_id)
+            friend = User.objects.get(id=friend_id)
+            friendship = Friendship.objects.filter(user=user, friend=friend).first()
+            if not friendship:
+                friendship = Friendship.objects.filter(user=friend, friend=user).first()
+            return friendship
+        except User.DoesNotExist:
+            return None
+
+    def post(self, request, id):
+
+        try:
+            user = User.objects.get(id=request.user.id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        try:
+            friend = User.objects.get(id=id)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "Friend not found."}, status=status.HTTP_404_NOT_FOUND
+            )
+        friendship = self.get_friendship(request.user.id, id)
+        if friendship:
+            return Response(
+                {"error": "Friendship already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        serializer = FriendshipSerializer(data={"user": user.id, "friend": friend.id})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -122,8 +237,22 @@ class AddFriendshipView(APIView):
 
 
 class RemoveFriendshipView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get_friendship(self, user_id, friend_id):
+        try:
+            user = User.objects.get(id=user_id)
+            friend = User.objects.get(id=friend_id)
+            friendship = Friendship.objects.filter(user=user, friend=friend).first()
+            if not friendship:
+                friendship = Friendship.objects.filter(user=friend, friend=user).first()
+            return friendship
+        except User.DoesNotExist:
+            return None
+
     def post(self, request, id):
         try:
+            _ = self.get_friendship(request.user.id, id)
             friendship = Friendship.objects.get(id=id)
         except Friendship.DoesNotExist:
             return Response(

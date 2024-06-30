@@ -11,16 +11,24 @@ from .views import (
     FriendshipDetailsView,
     FriendshipsListView,
     RegisterView,
+    UserProfileView,
+    UserFriendShipView,
 )
 
 urlpatterns = [
+    path("user", UserProfileView.as_view(), name="profile"),
     path("users/register", RegisterView.as_view(), name="register"),
     path("users/", UsersListView.as_view(), name="users"),
     path("users/modify/<int:id>/", ModifyUserView.as_view(), name="modify_user"),
-    path("users/delete/<int:id>/", DeleteUserView.as_view(), name="delete_user"),
+    path("user/remove", DeleteUserView.as_view(), name="delete_user"),
     path("users/<int:id>/", UserDetailsView.as_view(), name="user_details"),
+    # path(
+    #     "friendshipsBwUsers/<int:id>", UserFriendShipView.as_view(), name="friendshipsBwUsers"
+    # ),
     path("friendships/<int:id>/", FriendshipsListView.as_view(), name="friendships"),
-    path("friendships/add/", AddFriendshipView.as_view(), name="add_friendship"),
+    path(
+        "friendships/add/<int:id>/", AddFriendshipView.as_view(), name="add_friendship"
+    ),
     path(
         "friendships/remove/<int:id>/",
         RemoveFriendshipView.as_view(),

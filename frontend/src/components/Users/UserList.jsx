@@ -1,5 +1,6 @@
 import React from "react";
 import UserItem from "./UserItem";
+import UserService from "../../services/UserService";
 
 const styles = {
   container: {
@@ -56,17 +57,29 @@ function UserList() {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
   const usersLoading = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const fetchUserList = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await UserService.fetchUsers();
+      if (response.status) {
+        console.log("Users fetched successfully");
+        setUsers(response.data);
+      } else {
+        setError("No user found");
+      }
+    } catch (error) {
+      console.error("Failed to fetch users:", error);
+      setError(
+        error.response.data.error || error.response.data.error_description
+      );
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  };
   React.useEffect(() => {
-    fetch("https://jsonplaceholder.typicode.com/users")
-      .then((res) => res.json())
-      .then((data) => {
-        setUsers(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
+    fetchUserList();
   }, []);
 
   return (
