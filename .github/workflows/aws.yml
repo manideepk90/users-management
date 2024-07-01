@@ -2,7 +2,7 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
@@ -36,8 +36,7 @@ jobs:
           user: ubuntu
 
       - name: Copy Dockerfiles (optional)
-        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
-        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./user_management/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
+        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ubuntu@43.204.103.187:/path/on/ec2 ./user_management/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
 
       - name: Build Docker images on EC2 (optional)
         run: ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ubuntu@43.204.103.187 'docker build -t frontend . && docker build -t backend .'
