@@ -39,8 +39,11 @@ jobs:
           EC2_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           EC2_URL: 43.204.103.187
 
-      - name: Copy Dockerfiles
-        run: scp -i $SSH_PRIVATE_KEY ./frontend/Dockerfile ubuntu@43.204.103.187:/path/on/ec2 ./user_management/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
+      - name: Copy Dockerfiles to EC2
+        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
+
+      - name: Copy Dockerfiles to EC2 backend
+        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }}  ./user_management/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
 
       - name: Build Docker images on EC2
         run: ssh -i $SSH_PRIVATE_KEY ubuntu@43.204.103.187 'docker build -t frontend . && docker build -t backend .'
