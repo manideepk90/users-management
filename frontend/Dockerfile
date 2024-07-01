@@ -1,5 +1,7 @@
 FROM node:22-alpine as build
 
+RUN docker-compose down
+
 WORKDIR /app
 
 COPY package*.json ./
