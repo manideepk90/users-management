@@ -1,0 +1,20 @@
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+
+  backend:
+    build:
+      context: ./user_management
+      dockerfile: Dockerfile
+    container_name: backend
+    environment:
+      - DJANGO_SETTINGS_MODULE=user_management.settings
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
