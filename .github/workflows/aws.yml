@@ -5,22 +5,22 @@ on:
     branches: [main]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Docker setup
-        uses: docker/setup-buildx-action@v1
+  # build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Docker setup
+  #       uses: docker/setup-buildx-action@v1
 
-      - name: Build Docker images
-        run: docker buildx build --push=false -t frontend ./frontend
+  #     - name: Build Docker images
+  #       run: docker buildx build --push=false -t frontend ./frontend
 
-        env:
-          DOCKER_BUILDKIT: 1
-      - name: Build Docker images
-        run: docker buildx build --push=false -t backend ./user_management
-        env:
-          DOCKER_BUILDKIT: 1
+  #       env:
+  #         DOCKER_BUILDKIT: 1
+  #     - name: Build Docker images
+  #       run: docker buildx build --push=false -t backend ./user_management
+  #       env:
+  #         DOCKER_BUILDKIT: 1
 
   deploy:
     runs-on: ubuntu-latest
@@ -40,10 +40,10 @@ jobs:
           EC2_URL: 43.204.103.187
 
       - name: Copy Dockerfiles to EC2
-        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
+        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ubuntu@43.204.103.187:/frontend
 
       - name: Copy Dockerfiles to EC2 backend
-        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }}  ./user_management/Dockerfile ubuntu@43.204.103.187:/path/on/ec2
+        run: scp -i ${{ secrets.SSH_PRIVATE_KEY }}  ./user_management/Dockerfile ubuntu@43.204.103.187:/user_management
 
       - name: Build Docker images on EC2
         run: ssh -i $SSH_PRIVATE_KEY ubuntu@43.204.103.187 'docker build -t frontend . && docker build -t backend .'
