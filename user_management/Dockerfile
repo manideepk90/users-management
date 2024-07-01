@@ -1,10 +1,12 @@
-FROM python:3.13.0b2-slim
+FROM python:3.12.4-slim
 
 WORKDIR /app
 
 ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt .
+
+RUN apt-get update && apt-get install -y gcc g++
 
 RUN pip install -r requirements.txt
 
