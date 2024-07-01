@@ -20,4 +20,4 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@43.204.103.187 'cd user-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
+          ssh -o StrictHostKeyChecking=no ubuntu@43.204.103.187 'cd users-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
