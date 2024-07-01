@@ -1,52 +1,23 @@
-name: CI/CD Pipeline
+name: Deploy to EC2
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Docker setup
-        uses: docker/setup-buildx-action@v1
-
-      # - name: Build Docker images
-      #   run: docker buildx build --push=false -t frontend ./frontend
-
-      #   env:
-      #     DOCKER_BUILDKIT: 1
-      # - name: Build Docker images
-      #   run: docker buildx build --push=false -t backend ./user_management
-      #   env:
-      #     DOCKER_BUILDKIT: 1
-
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
-    environment:
-      name: production
+    
     steps:
-      - uses: actions/checkout@v3
-      - name: Connect to EC2
-        uses: omarhosny206/setup-ssh-for-ec2@v1.0.0
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          EC2_USER: ubuntu
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
         with:
-          instance-id: ${{ secrets.EC2_INSTANCE_ID }}
-          EC2_SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          EC2_URL: 43.204.103.187
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      # - name: Copy Dockerfiles to EC2
-      #   run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} user-management/frontend/Dockerfile ubuntu@43.204.103.187:user-management/frontend
-
-      # - name: Copy Dockerfiles to EC2
-      #   run: scp -i ${{ secrets.SSH_PRIVATE_KEY }} user-management/user_management/Dockerfile ubuntu@43.204.103.187:user-management/user_management
-
-      # - name: Build Docker images on EC2
-      #   run: ssh -i $SSH_PRIVATE_KEY ubuntu@43.204.103.187 'docker build -t frontend . && docker build -t backend .'
-
-      - name: Run docker-compose
-        run: ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@43.204.103.187 'cd user-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
+      - name: Deploy to EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no ubuntu@43.204.103.187 'cd user-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
