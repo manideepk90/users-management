@@ -6,7 +6,7 @@ ENV PYTHONUNBUFFERED=1
 
 COPY requirements.txt .
 
-RUN apt-get update && apt-get install -y gcc g++
+# RUN apt-get update && apt-get install -y gcc g++
 
 RUN pip install -r requirements.txt
 
