@@ -33,6 +33,6 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/frontend
-            scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./user_management/Dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/user_management
-            ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'docker build -t frontend /frontend && docker build -t backend /user_management && docker-compose up -d'
+            # scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./frontend/Dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:user_management/frontend
+            # scp -i ${{ secrets.SSH_PRIVATE_KEY }} ./user_management/Dockerfile ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/user_management
+            ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'docker build -t frontend user-management/frontend && docker build -t backend /user-management/user_management && docker-compose up -d'
