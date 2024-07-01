@@ -13,11 +13,11 @@ jobs:
         uses: docker/setup-buildx-action@v1
 
       - name: Build Docker images
-        run: docker buildx build --push=false -t frontend ./.frontend
+        run: docker buildx build --push=false -t frontend ./frontend
         env:
           DOCKER_BUILDKIT: 1
       - name: Build Docker images
-        run: docker buildx build --push=false -t backend ./.user_management
+        run: docker buildx build --push=false -t backend ./user_management
         env:
           DOCKER_BUILDKIT: 1
 
