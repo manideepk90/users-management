@@ -49,4 +49,4 @@ jobs:
       #   run: ssh -i $SSH_PRIVATE_KEY ubuntu@43.204.103.187 'docker build -t frontend . && docker build -t backend .'
 
       - name: Run docker-compose
-        run: ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} 'cd user-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
+        run: ssh -i ${{ secrets.SSH_PRIVATE_KEY }} ${{ secrets.EC2_USER }}@43.204.103.187 'cd user-management && git pull origin main && docker-compose -f docker-compose.yml up -d'
